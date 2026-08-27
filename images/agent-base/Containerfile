@@ -27,7 +27,7 @@ RUN dnf install -y \
     tar \
     python3.11 \
     python3.11-pip \
-    && python3.11 -m pip install --no-cache-dir --no-index --find-links /cachi2/output/deps/generic/ graphifyy==0.7.17 \
+    && python3.11 -m pip install --no-cache-dir --no-index --find-links /cachi2/output/deps/pip/ graphifyy==0.7.17 \
     && dnf clean all
 
 ENV PYTHONUNBUFFERED=1
