@@ -7,14 +7,8 @@
 # --- Build stage ---
 FROM golang:1.26 AS builder
 
-# The harness replaces github.com/konveyor/agentic-controller/api with ../api,
-# so that module has to be in the image at the path the replace names, laid out
-# the same way it is in the repository. Manifests first, so the download layer
-# still caches on go.mod alone.
 WORKDIR /src/harness
-COPY api/go.mod api/go.sum /src/api/
 COPY harness/go.mod harness/go.sum ./
-RUN go mod download
 COPY api/ /src/api/
 COPY harness/cmd/ cmd/
 COPY harness/internal/ internal/
@@ -24,20 +18,13 @@ RUN CGO_ENABLED=0 go build -o /migration-harness ./cmd/migration-harness/
 FROM registry.access.redhat.com/ubi10/ubi:latest
 
 RUN dnf install -y \
-    curl \
     git \
     ca-certificates \
     bzip2 \
     tar \
-    python3 \
-    python3-pip \
-    python3-devel \
-    gcc \
-    gcc-c++ \
-    libffi-devel \
-    pkg-config \
-    && python3 -m pip install --no-cache-dir graphifyy==0.7.17 \
-    && dnf remove -y gcc gcc-c++ python3-devel libffi-devel pkg-config \
+    python3.11 \
+    python3.11-pip \
+    && python3.11 -m pip install --no-cache-dir --no-index --find-links /cachi2/output/deps/pip/ graphifyy==0.7.17 \
     && dnf clean all
 
 ENV PYTHONUNBUFFERED=1
