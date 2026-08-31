@@ -7,15 +7,12 @@
 # --- Build stage ---
 FROM golang:1.26 AS builder
 
-# Dependencies are pre-vendored in harness/vendor/ so no network fetch is needed.
-# The vendor directory also includes the local api module (replace ../api).
 WORKDIR /src/harness
 COPY harness/go.mod harness/go.sum ./
-COPY harness/vendor/ vendor/
 COPY api/ /src/api/
 COPY harness/cmd/ cmd/
 COPY harness/internal/ internal/
-RUN CGO_ENABLED=0 go build -mod=vendor -o /migration-harness ./cmd/migration-harness/
+RUN CGO_ENABLED=0 go build -o /migration-harness ./cmd/migration-harness/
 
 # --- Runtime stage ---
 FROM registry.access.redhat.com/ubi10/ubi:latest
