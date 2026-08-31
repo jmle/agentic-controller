@@ -7,7 +7,8 @@
 # --- Build stage ---
 FROM golang:1.26 AS builder
 
-# Goose CLI build deps
+# Goose CLI build deps: Debian equivalents of BUILDING_LINUX.md Fedora/RHEL packages
+# plus the manylinux release workflow (cmake, perl, clang for bindgen/llama-cpp).
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
     && apt-get update && apt-get install -y \
         build-essential \
@@ -55,7 +56,11 @@ RUN dnf install -y \
     tar \
     python3.11 \
     python3.11-pip \
-    && python3.11 -m pip install --no-cache-dir --no-index --find-links /cachi2/output/deps/pip/ graphifyy==0.7.17 \
+    && if [ -d /cachi2/output/deps/pip ]; then \
+        python3.11 -m pip install --no-cache-dir --no-index --find-links /cachi2/output/deps/pip/ graphifyy==0.7.17; \
+    else \
+        python3.11 -m pip install --no-cache-dir graphifyy==0.7.17; \
+    fi \
     && dnf clean all
 
 ENV PYTHONUNBUFFERED=1
