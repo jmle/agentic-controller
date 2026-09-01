@@ -1,0 +1,3 @@
+[submodule "images/agent-base/goose-src"]
+	path = images/agent-base/goose-src
+	url = https://github.com/aaif-goose/goose

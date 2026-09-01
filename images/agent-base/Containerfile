@@ -7,29 +7,18 @@
 # --- Build stage ---
 FROM golang:1.26 AS builder
 
-# Goose CLI build deps
+# Goose CLI build deps (Debian/Ubuntu for local builds; ocp-build-data replaces with dnf for RHEL)
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
-    && apt-get update && apt-get install -y \
-        build-essential \
-        git \
-        cmake \
-        pkg-config \
-        libssl-dev \
-        libclang-dev \
-        clang \
-        libdbus-1-dev \
-        libxcb1-dev \
-        perl \
+    && apt-get update && apt-get install -y build-essential git cmake pkg-config libssl-dev libclang-dev clang libdbus-1-dev libxcb1-dev perl \
     && rm -rf /var/lib/apt/lists/*
 
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-# Build goose from source (BUILDING_LINUX.md)
-ARG GOOSE_VERSION=v1.45.0
+# Build goose from the submodule source (images/agent-base/goose-src/).
+# Run `git submodule update --init images/agent-base/goose-src` before building locally.
 WORKDIR /src/goose
-RUN git clone https://github.com/aaif-goose/goose.git . \
-    && git checkout ${GOOSE_VERSION} \
-    && cargo build --release -p goose-cli --bin goose \
+COPY images/agent-base/goose-src/ .
+RUN cargo build --release -p goose-cli --bin goose \
     && mv target/release/goose /usr/local/bin/goose
 
 # The harness replaces github.com/konveyor/agentic-controller/api with ../api,
