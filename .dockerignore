@@ -5,6 +5,7 @@ config/
 docs/
 hack/
 images/
+!images/agent-base/goose-src/
 skills/
 test/
 changes/
