@@ -83,6 +83,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
+          submodules: true
 
       - name: Build and upload agent-base artifact
         uses: konveyor/ci/build-image@e45ec039d03d41be52ae0c9abef260ee3ae8172a # main
